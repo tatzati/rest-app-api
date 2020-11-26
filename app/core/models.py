@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
+from django.db.models.query import QuerySet
 
 class CoreModel(models.Model):
     class Meta:
@@ -11,10 +11,6 @@ class CoreModel(models.Model):
 
 
 class UserManager(BaseUserManager):
-    class Meta:
-        db_table = 'auth_user'
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
 
     def create_user(self, email, password=None, **extra_fields):
         """Creates and saves a new user"""
@@ -34,6 +30,13 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
+
+
+class PlanManager(QuerySet):
+
+    def get_all(self):
+        """Creates and saves a super user"""
+        return self.filter(deleted=False)
 
 
 class User(AbstractBaseUser, CoreModel, PermissionsMixin):
